@@ -3,10 +3,11 @@ from decimal import Decimal
 
 import pytest
 
-from clinicasegura.aplicacion.borde import a_receta
+from pydantic import ValidationError
+
+from clinicasegura.aplicacion.borde import SolicitudReceta, a_receta
 from clinicasegura.dominio.errores import (CadenaNoSoportada,
-                                           FarmaciaNoDisponible,
-                                           RecetaInvalida)
+                                           FarmaciaNoDisponible)
 from clinicasegura.dominio.modelos import Cedula, Despacho, Receta
 from clinicasegura.dominio.servicio import EmisionDeRecetas
 
@@ -92,8 +93,8 @@ def test_la_cadena_caida_se_propaga_como_error_de_dominio():
     with pytest.raises(FarmaciaNoDisponible) as fallo:
         servicio.emitir(receta(), "saludtotal")
     assert isinstance(fallo.value.__cause__, TimeoutError)
-    assert bitacora.eventos == [], (
-        "No se puede registrar una emisión que nunca ocurrió."
+    assert bitacora.eventos == [("fallida", "F-00001")], (
+        "Fallar rápido no es fallar en silencio: la caída también deja rastro."
     )
 
 
@@ -104,15 +105,23 @@ def test_una_cadena_que_nadie_atiende_no_devuelve_none():
 
 
 def test_el_borde_rechaza_una_receta_invalida():
-    for datos in (
-        {"cedula": "1-1234-5678", "medicamento": "N02BE01", "dias": 0,
-         "dosis_mg": "500"},
-        {"cedula": "abc", "medicamento": "N02BE01", "dias": 30,
-         "dosis_mg": "500"},
-        {"cedula": "1-1234-5678", "medicamento": "N02BE01", "dias": 30},
-    ):
-        with pytest.raises(RecetaInvalida):
-            a_receta(datos)
+    for cambio in ({"dias": 0}, {"dias": 400}, {"dosis_mg": "-5"},
+                   {"cedula": "abc"}, {"es_vip": True}):
+        datos = {"cedula": "1-1234-5678", "medicamento": "N02BE01",
+                 "dias": 30, "dosis_mg": "500"}
+        datos.update(cambio)
+        with pytest.raises(ValidationError):
+            SolicitudReceta(**datos)
+
+
+def test_lo_que_pasa_el_borde_ya_no_se_puede_volver_a_ensuciar():
+    solicitud = SolicitudReceta(cedula="1-1234-5678", medicamento="N02BE01",
+                                dias=30, dosis_mg="500")
+    with pytest.raises(ValidationError):
+        solicitud.dias = 400
+    receta = a_receta(solicitud)
+    assert isinstance(receta.cedula, Cedula)
+    assert isinstance(receta.dosis_mg, Decimal)
 
 
 def test_el_recargo_por_riesgo_alto_duplica_el_monto():

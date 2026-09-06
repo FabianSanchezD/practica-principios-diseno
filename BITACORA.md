@@ -356,12 +356,52 @@ SELLO: e09867626938fe5c
 
 **Predicción:**
 
+Espero siete rojas y cuatro verdes: faltan SolicitudReceta y a_receta con pydantic, y además mi servicio no registra la falla en la bitácora cuando la farmacia se cae. Eso último me choca con una prueba mía, que exige justo lo contrario, así que ahí tengo un conflicto que resolver y no sólo código que escribir.
+
 **Observación:**
 
 ```
+$ python -c "...emitir({dias: 0})"
+    assert datos["dias"] > 0, "los dias deben ser positivos"
+           ^^^^^^^^^^^^^^^^^
+AssertionError: los dias deben ser positivos
+
+$ python -O -c "...la misma linea"
+(sigue corriendo despues de 8 segundos y hubo que matarlo)
+
+$ pytest -m etapa6
+E      Revise el contrato de la etapa en la guía.
+____ test_si_la_farmacia_falla_se_propaga_un_error_de_dominio_con_contexto _____
+pruebas/test_etapa6_defensa.py:147: in test_si_la_farmacia_falla_se_propaga_un_error_de_dominio_con_contexto
+    assert bitacora.eventos, (
+E   AssertionError: La falla no quedó registrada. Fallar rápido no significa fallar en silencio: se propaga Y se deja rastro.
+E   assert []
+E    +  where [] = <pruebas.test_etapa6_defensa.test_si_la_farmacia_falla_se_propaga_un_error_de_dominio_con_contexto.<locals>.Bitacora object at 0x10aa3f230>.eventos
+=========================== short test summary info ============================
+FAILED pruebas/test_etapa6_defensa.py::test_el_borde_acepta_lo_valido_y_lo_convierte_en_un_tipo_del_dominio
+FAILED pruebas/test_etapa6_defensa.py::test_el_borde_rechaza_lo_invalido[cambio0-los d\xedas deben ser mayores que cero]
+FAILED pruebas/test_etapa6_defensa.py::test_el_borde_rechaza_lo_invalido[cambio1-la vigencia m\xe1xima son 90 d\xedas]
+FAILED pruebas/test_etapa6_defensa.py::test_el_borde_rechaza_lo_invalido[cambio2-la dosis debe ser positiva]
+FAILED pruebas/test_etapa6_defensa.py::test_el_borde_rechaza_lo_invalido[cambio3-la c\xe9dula tiene formato 0-0000-0000]
+FAILED pruebas/test_etapa6_defensa.py::test_el_borde_rechaza_campos_desconocidos
+FAILED pruebas/test_etapa6_defensa.py::test_si_la_farmacia_falla_se_propaga_un_error_de_dominio_con_contexto
+7 failed, 4 passed, 73 deselected in 0.06s
 ```
 
 **Explicación:**
+
+Correcto: siete rojas y cuatro verdes, y las cuatro que ya pasaban eran las de higiene, porque nunca copié el except con pass ni el while True del código de partida.
+
+**Sello:** 3df0bb9ae6a6992a
+
+Salida del marcador al cerrar la etapa:
+
+```
+Etapa 6  Diseño defensivo                            verde
+11 pruebas en verde · 0 por resolver
+corrida #9 registrada
+SELLO: 3df0bb9ae6a6992a
+```
 
 **Sello:**
 

@@ -4,6 +4,7 @@ from datetime import datetime, timedelta
 from decimal import Decimal
 
 VIGENCIA_DIAS = 30
+VIGENCIA_MAXIMA_DIAS = 90
 TARIFA_DIARIA = Decimal("250")
 FACTOR_RIESGO_ALTO = 2
 

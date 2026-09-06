@@ -1,34 +1,28 @@
 from __future__ import annotations
 
-from decimal import Decimal, InvalidOperation
-from typing import Mapping
+from decimal import Decimal
 
-from clinicasegura.dominio.errores import RecetaInvalida
-from clinicasegura.dominio.modelos import Cedula, Receta
+from pydantic import BaseModel, ConfigDict, Field
 
-CAMPOS_REQUERIDOS = ("cedula", "medicamento", "dias", "dosis_mg")
+from clinicasegura.dominio.modelos import PATRON_CEDULA, Cedula, Receta
+from clinicasegura.dominio.reglas import VIGENCIA_MAXIMA_DIAS
 
 
-def a_receta(datos: Mapping) -> Receta:
-    faltantes = [c for c in CAMPOS_REQUERIDOS if c not in datos]
-    if faltantes:
-        raise RecetaInvalida(f"Faltan los campos {sorted(faltantes)}.")
+class SolicitudReceta(BaseModel):
+    model_config = ConfigDict(extra="forbid", frozen=True)
 
-    try:
-        dias = int(datos["dias"])
-        dosis_mg = Decimal(str(datos["dosis_mg"]))
-    except (TypeError, ValueError, InvalidOperation) as falla:
-        raise RecetaInvalida(f"Días o dosis no son numéricos: {falla}") from falla
+    cedula: str = Field(pattern=PATRON_CEDULA.pattern)
+    medicamento: str = Field(min_length=1)
+    dias: int = Field(gt=0, le=VIGENCIA_MAXIMA_DIAS)
+    dosis_mg: Decimal = Field(gt=0)
+    riesgo_alto: bool = False
 
-    if dias <= 0:
-        raise RecetaInvalida("Los días de tratamiento deben ser positivos.")
-    if dosis_mg <= 0:
-        raise RecetaInvalida("La dosis debe ser mayor que cero.")
 
+def a_receta(solicitud: SolicitudReceta) -> Receta:
     return Receta(
-        cedula=Cedula(str(datos["cedula"])),
-        medicamento=str(datos["medicamento"]),
-        dias=dias,
-        dosis_mg=dosis_mg,
-        riesgo_alto=bool(datos.get("riesgo_alto", False)),
+        cedula=Cedula(solicitud.cedula),
+        medicamento=solicitud.medicamento,
+        dias=solicitud.dias,
+        dosis_mg=solicitud.dosis_mg,
+        riesgo_alto=solicitud.riesgo_alto,
     )

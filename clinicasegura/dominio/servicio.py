@@ -37,8 +37,10 @@ class EmisionDeRecetas:
         try:
             despacho = pasarela.enviar(receta, folio, vence)
         except FarmaciaNoDisponible:
+            self.bitacora.registrar("fallida", folio)
             raise
         except Exception as falla:
+            self.bitacora.registrar("fallida", folio)
             raise FarmaciaNoDisponible(
                 f"«{cadena}» no aceptó el folio {folio}: {falla}"
             ) from falla
