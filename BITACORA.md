@@ -162,12 +162,45 @@ SELLO: a24ebb0bd4d7129e
 
 **Predicción:**
 
+Espero que las cinco pasen sin tocar código, porque al rediseñar la etapa 1 ya dejé calcular_recargo con tres valores simples, emitir recibiendo una Receta y el dominio sin sqlite.
+
 **Observación:**
 
 ```
+$ python -c "cuántos lugares dependen de CONFIG"
+lecturas de CONFIG en legado.py: 8
+  legado.py:66  vence = datetime.now() + timedelta(days=CONFIG["vigencia_dias"])
+  legado.py:74  recargo = CONFIG["tarifa_diaria"] * datos["dias"] * 2
+  legado.py:76  recargo = CONFIG["tarifa_diaria"] * datos["dias"]
+  legado.py:81  CONFIG["farmauno_url"],
+  legado.py:86  CONFIG["saludtotal_url"],
+  legado.py:91  CONFIG["cruzverde_url"],
+  legado.py:129  peticion, timeout=CONFIG["timeout"]
+  legado.py:143  with urllib.request.urlopen(url, timeout=CONFIG["timeout"]) as r:
+
+metodos afectados por CONFIG["vigencia_dias"] = 1: emitir, y por tanto todo lo que emita
+
+$ pytest -m etapa2
+.....                                                                    [100%]
+5 passed, 79 deselected in 0.02s
 ```
 
 **Explicación:**
+
+Todo bien, pasaron sin cambios porque ya los había hecho en la etapa 1 sin querer.
+
+Como las pruebas no me exigían nada, busqué qué quedaba acoplado igual. Encontré que emitir leía TARIFA_DIARIA y VIGENCIA_DIAS importadas de reglas.py:6 y reglas.py:7 sin declararlas: son inmutables, así que no son estado global mutable, pero seguían siendo dependencias invisibles. Las subí a la firma como parámetros con valor por omisión en servicio.py:19, así emitir(receta, cadena) sigue funcionando igual y ahora se puede emitir con otra tarifa sin parchar el módulo.
+
+**Sello:** 224b7bd83952cebb
+
+Salida del marcador al cerrar la etapa:
+
+```
+Etapa 2  Reducir el acoplamiento                      verde
+5 pruebas en verde · 0 por resolver
+corrida #5 registrada
+SELLO: 224b7bd83952cebb
+```
 
 **Sello:**
 

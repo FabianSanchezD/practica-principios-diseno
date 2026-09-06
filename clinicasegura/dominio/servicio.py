@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from decimal import Decimal
+
 from clinicasegura.dominio.errores import (CadenaNoSoportada,
                                            FarmaciaNoDisponible)
 from clinicasegura.dominio.modelos import Despacho, Receta
@@ -14,16 +16,18 @@ class EmisionDeRecetas:
         self.folios = folios
         self.bitacora = bitacora
 
-    def emitir(self, receta: Receta, cadena: str) -> Despacho:
+    def emitir(self, receta: Receta, cadena: str,
+               tarifa_diaria: Decimal = TARIFA_DIARIA,
+               vigencia_dias: int = VIGENCIA_DIAS) -> Despacho:
         pasarela = self.pasarelas.get(cadena)
         if pasarela is None:
             raise CadenaNoSoportada(
                 f"Ninguna pasarela registrada atiende «{cadena}»."
             )
 
-        vence = vencimiento(self.reloj.ahora(), VIGENCIA_DIAS)
+        vence = vencimiento(self.reloj.ahora(), vigencia_dias)
         folio = self.folios.siguiente()
-        recargo = calcular_recargo(receta.dias, TARIFA_DIARIA,
+        recargo = calcular_recargo(receta.dias, tarifa_diaria,
                                    receta.riesgo_alto)
 
         try:
