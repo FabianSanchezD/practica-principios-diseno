@@ -297,7 +297,7 @@ Para el 9 y el 8 escribí arranque.py, que es la raíz de composición y el úni
 
 Llenar DEPENDENCIAS.md fue lo que más me hizo pensar, porque la columna de ruta de salida obliga a admitir cuánto cuesta cada dependencia. La fila incómoda es la de la API de FarmaUno: es la única de riesgo alto y la única cuya fecha de muerte no decido yo. Lo único que me protege es que la versión está en una variable de entorno y no incrustada en el código, como estaba en legado.py:31.
 
-**Sello:** 48e74a7729ac0c26
+**Sello:** 5e2ec5fb67c00088
 
 Salida del marcador al cerrar la etapa:
 
@@ -305,7 +305,7 @@ Salida del marcador al cerrar la etapa:
 Etapa 4  Flexibilidad, obsolescencia y portabilidad   verde
 7 pruebas en verde · 0 por resolver
 corrida #7 registrada
-SELLO: 48e74a7729ac0c26
+SELLO: 5e2ec5fb67c00088
 ```
 
 **Sello:**
@@ -341,7 +341,7 @@ Correcto. La roja era la única que no se puede aprobar rediseñando: hay que es
 
 Escribí ocho en mis_pruebas/test_emision.py. Las tres del enunciado son test_la_vigencia_sale_del_reloj_inyectado_y_no_del_sistema en test_emision.py:78, test_la_cadena_caida_se_propaga_como_error_de_dominio en test_emision.py:90 y test_el_borde_rechaza_una_receta_invalida en test_emision.py:106. Ninguna de las tres era escribible contra el código de partida: la primera habría exigido esperar treinta días, la segunda apagar una farmacia de verdad, y la tercera no habría fallado nunca porque el legado usaba assert.
 
-**Sello:** e09867626938fe5c
+**Sello:** e86d5ac61bb59ce8
 
 Salida del marcador al cerrar la etapa:
 
@@ -349,7 +349,7 @@ Salida del marcador al cerrar la etapa:
 Etapa 5  Testabilidad                                verde
 7 pruebas en verde · 0 por resolver
 corrida #8 registrada
-SELLO: e09867626938fe5c
+SELLO: e86d5ac61bb59ce8
 ```
 
 ## Etapa 6 — Diseño defensivo
@@ -392,7 +392,7 @@ FAILED pruebas/test_etapa6_defensa.py::test_si_la_farmacia_falla_se_propaga_un_e
 
 Correcto: siete rojas y cuatro verdes, y las cuatro que ya pasaban eran las de higiene, porque nunca copié el except con pass ni el while True del código de partida.
 
-**Sello:** 3df0bb9ae6a6992a
+**Sello:** 9bc3437e6cc69620
 
 Salida del marcador al cerrar la etapa:
 
@@ -400,7 +400,7 @@ Salida del marcador al cerrar la etapa:
 Etapa 6  Diseño defensivo                            verde
 11 pruebas en verde · 0 por resolver
 corrida #9 registrada
-SELLO: 3df0bb9ae6a6992a
+SELLO: 9bc3437e6cc69620
 ```
 
 **Sello:**
