@@ -1,16 +1,20 @@
 from __future__ import annotations
 
 from decimal import Decimal
+from typing import Mapping
 
 from clinicasegura.dominio.errores import (CadenaNoSoportada,
                                            FarmaciaNoDisponible)
 from clinicasegura.dominio.modelos import Despacho, Receta
+from clinicasegura.dominio.puertos import (Bitacora, GeneradorFolio,
+                                           Pasarela, Reloj)
 from clinicasegura.dominio.reglas import (TARIFA_DIARIA, VIGENCIA_DIAS,
                                           calcular_recargo, vencimiento)
 
 
 class EmisionDeRecetas:
-    def __init__(self, pasarelas, reloj, folios, bitacora):
+    def __init__(self, pasarelas: Mapping[str, Pasarela], reloj: Reloj,
+                 folios: GeneradorFolio, bitacora: Bitacora):
         self.pasarelas = pasarelas
         self.reloj = reloj
         self.folios = folios

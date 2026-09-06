@@ -208,12 +208,48 @@ SELLO: 224b7bd83952cebb
 
 **Predicción:**
 
+Espero tres rojas porque falta dominio/puertos.py, así que las dos pruebas de puertos fallan, y ninguna parte de mi código importa re, así que la de no reinventar la validación también; las otras cuatro deberían pasar porque emitir ya devuelve Despacho, Receta.cedula ya es del tipo Cedula, y uuid y Decimal ya están importados.
+
 **Observación:**
 
 ```
+$ grep -rn "data\|attributes\|full_name\|risk_lvl" clinicasegura/ (sin __pycache__)
+coincidencias totales: 8
+clinicasegura/legado.py:3
+clinicasegura/dominio/modelos.py:4
+clinicasegura/infraestructura/pasarelas.py:1
+
+las que son del modelo del proveedor:
+clinicasegura/legado.py:150:            paciente["data"]["attributes"]["full_name"],
+clinicasegura/legado.py:151:            paciente["data"]["attributes"]["risk_lvl"],
+
+$ pytest -m etapa3
+E        Nunca escriba usted parsers de formatos estándar.
+E   assert ('re' in {'__future__', 'clinicasegura', 'dataclasses', 'datetime', 'decimal', 'json', ...} or 'pydantic' in '\nfrom __future__ import annotations\nfrom datetime import datetime, timedelta\nfrom decimal import Decimal\nVIGENCIA...s\nimport uuid\n\nclass FoliosUnicos:\n\n    def siguiente(self) -> str:\n        return uuid.uuid4().hex[:12].upper()')
+E    +  where {'__future__', 'clinicasegura', 'dataclasses', 'datetime', 'decimal', 'json', ...} = modulos_importados_de_todo()
+=========================== short test summary info ============================
+FAILED pruebas/test_etapa3_abstraccion_reuso.py::test_el_dominio_declara_sus_puertos_como_protocolos
+FAILED pruebas/test_etapa3_abstraccion_reuso.py::test_los_puertos_hablan_el_idioma_del_dominio_y_no_el_del_proveedor
+FAILED pruebas/test_etapa3_abstraccion_reuso.py::test_no_se_reinventa_lo_que_la_biblioteca_estandar_ya_resuelve
+3 failed, 4 passed, 77 deselected in 0.06s
 ```
 
 **Explicación:**
+
+Todo La segunda no falló por una aserción, sino con FileNotFoundError, porque la prueba abre dominio/puertos.py directamente para leer los nombres que elegí.
+
+El experimento del radio de impacto da 8 coincidencias, pero el número engaña: sólo 2 son del modelo del proveedor, legado.py:150 y legado.py:151, y las otras 6 son la palabra data dentro de dataclass. En el código vivo el radio ya era 0, no porque yo lo bajara en esta etapa sino porque al partir el monolito nunca copié buscar_paciente ni reporte. Repetido al cerrar, sigue en 0.
+
+**Sello:** b7d3d0b694a6d420
+
+Salida del marcador al cerrar la etapa:
+
+```
+Etapa 3  Abstracción y reuso                          verde
+7 pruebas en verde · 0 por resolver
+corrida #6 registrada
+SELLO: b7d3d0b694a6d420
+```
 
 **Sello:**
 
