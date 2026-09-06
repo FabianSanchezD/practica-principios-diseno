@@ -257,12 +257,56 @@ SELLO: b7d3d0b694a6d420
 
 **Predicción:**
 
+Espero tres rojas: falta infraestructura/registro.py, falta clinicasegura/arranque.py y DEPENDENCIAS.md sigue con las celdas de la plantilla vacías. Las otras cuatro deberían pasar, porque el servicio ya busca la cadena en un diccionario y no la ramifica, no uso open en ninguna parte y las URLs sólo entran por el constructor de las pasarelas.
+
 **Observación:**
 
 ```
+$ pytest -m etapa4
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   ModuleNotFoundError: No module named 'clinicasegura.arranque'
+
+During handling of the above exception, another exception occurred:
+pruebas/test_etapa4_flexibilidad.py:152: in test_la_configuracion_entra_por_el_entorno
+    importar("clinicasegura.arranque")
+pruebas/apoyo.py:24: in importar
+    pytest.fail(
+E   Failed: Falta el módulo «clinicasegura.arranque».
+E      Cree el archivo clinicasegura/arranque.py (y el __init__.py de su paquete).
+E      Detalle: No module named 'clinicasegura.arranque'
+____________ test_existe_la_tabla_de_obsolescencia_de_dependencias _____________
+pruebas/test_etapa4_flexibilidad.py:202: in test_existe_la_tabla_de_obsolescencia_de_dependencias
+    assert not vacias, "Filas incompletas en DEPENDENCIAS.md: " + ", ".join(vacias)
+E   AssertionError: Filas incompletas en DEPENDENCIAS.md: pytest, pydantic, 
+E   assert not ['pytest', 'pydantic', '']
+=========================== short test summary info ============================
+FAILED pruebas/test_etapa4_flexibilidad.py::test_se_agrega_una_cadena_nueva_sin_tocar_el_servicio
+FAILED pruebas/test_etapa4_flexibilidad.py::test_la_configuracion_entra_por_el_entorno
+FAILED pruebas/test_etapa4_flexibilidad.py::test_existe_la_tabla_de_obsolescencia_de_dependencias
+3 failed, 4 passed, 77 deselected in 0.04s
 ```
 
 **Explicación:**
+
+Acerté: las tres rojas fueron exactamente las que dije, y por las razones que dije.
+
+El principio 7 se resolvió con dos líneas de verdad. construir_registro, en registro.py:8, arma un diccionario indexado por el atributo cadena de cada pasarela, y el servicio hace un get sobre ese diccionario. La prueba define una cuarta cadena, FarmaViva, dentro del propio archivo de pruebas, la registra desde fuera y emite con ella sin que yo tocara servicio.py. Eso es lo que significa cerrado a modificación: la variación vive en un objeto nuevo, no en una rama nueva.
+
+Para el 9 y el 8 escribí arranque.py, que es la raíz de composición y el único archivo que sabe a la vez de sqlite, de URLs y del sistema de archivos. Las tres URLs quedaron en una tupla en arranque.py:16 con su variable de entorno al lado, el timeout sale de FARMACIA_TIMEOUT_MS en arranque.py:23 y la ruta de la bitácora de tempfile.gettempdir en arranque.py:27, que es lo que reemplaza al C:\ClinicaSegura del código de partida. Lo probé: con FARMAUNO_URL apuntando a v4, construir_servicio en arranque.py:32 arma el servicio contra la versión nueva sin recompilar nada.
+
+Llenar DEPENDENCIAS.md fue lo que más me hizo pensar, porque la columna de ruta de salida obliga a admitir cuánto cuesta cada dependencia. La fila incómoda es la de la API de FarmaUno: es la única de riesgo alto y la única cuya fecha de muerte no decido yo. Lo único que me protege es que la versión está en una variable de entorno y no incrustada en el código, como estaba en legado.py:31.
+
+**Sello:** 0d1b89dea8529e05
+
+Salida del marcador al cerrar la etapa:
+
+```
+Etapa 4  Flexibilidad, obsolescencia y portabilidad   verde
+7 pruebas en verde · 0 por resolver
+corrida #7 registrada
+SELLO: 0d1b89dea8529e05
+```
 
 **Sello:**
 
