@@ -305,7 +305,7 @@ Salida del marcador al cerrar la etapa:
 Etapa 4  Flexibilidad, obsolescencia y portabilidad   verde
 7 pruebas en verde · 0 por resolver
 corrida #7 registrada
-SELLO: 0d1b89dea8529e05
+SELLO: 48e74a7729ac0c26
 ```
 
 **Sello:**
