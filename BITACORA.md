@@ -18,14 +18,49 @@ Carné: 2025064258
 
 **Predicción:**
 
+Espero dos rojas y dos verdes: la plantilla ya trae las once filas con el nombre de cada principio, así que las pruebas que cuentan filas y buscan los nombres deberían pasar, pero las columnas de hallazgo y evidencia están vacías.
+
 **Observación:**
 
 ```
+$ pytest -m etapa0
+..FF                                                                     [100%]
+=================================== FAILURES ===================================
+___________________ test_cada_hallazgo_cita_archivo_y_linea ____________________
+pruebas/test_etapa0_diagnostico.py:65: in test_cada_hallazgo_cita_archivo_y_linea
+    assert not sin_evidencia, (
+E   AssertionError: Estas filas no citan archivo y línea (por ejemplo «legado.py:38»): 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11
+E        Una decisión sin evidencia vale cero, también en el diagnóstico.
+E   assert not ['1', '2', '3', '4', '5', '6', ...]
+_________ test_ninguna_fila_quedo_vacia_o_con_el_texto_de_la_plantilla _________
+pruebas/test_etapa0_diagnostico.py:76: in test_ninguna_fila_quedo_vacia_o_con_el_texto_de_la_plantilla
+    assert not malas, "Filas incompletas: " + ", ".join(malas)
+E   AssertionError: Filas incompletas: 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11
+E   assert not ['1', '2', '3', '4', '5', '6', ...]
+=========================== short test summary info ============================
+FAILED pruebas/test_etapa0_diagnostico.py::test_cada_hallazgo_cita_archivo_y_linea
+FAILED pruebas/test_etapa0_diagnostico.py::test_ninguna_fila_quedo_vacia_o_con_el_texto_de_la_plantilla
+2 failed, 2 passed, 80 deselected in 0.02s
 ```
 
 **Explicación:**
 
-**Sello:**
+Acerté: dos rojas y dos verdes. Las que pasaron contaban filas y nombres que la plantilla ya traía; ninguna miraba si yo había escrito algo.
+
+Leyendo legado.py encontré los once violados. El que no esperaba fue el 5: _post en legado.py:119 parecía la pieza genérica del archivo, pero lee el timeout de la global en legado.py:129. Los más caros son el 10 y el 11 juntos: el assert de legado.py:62 se apaga con python -O y el except con pass de legado.py:103 se traga el fallo, así que en producción la receta inválida se emite callada.
+
+CONFIG, en legado.py:30, aparece en tres filas distintas: es una causa con tres consecuencias, no tres hallazgos.
+
+**Sello:** 6fbae6c740cb5b95
+
+Salida del marcador al cerrar la etapa:
+
+```
+Etapa 0  Diagnóstico                                  verde
+4 pruebas en verde · 0 por resolver
+corrida #4 registrada
+SELLO: 6fbae6c740cb5b95
+```
 
 ## Etapa 1 — Dividir y conquistar, cohesión
 
