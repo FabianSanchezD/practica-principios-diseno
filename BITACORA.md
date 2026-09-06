@@ -297,7 +297,7 @@ Para el 9 y el 8 escribí arranque.py, que es la raíz de composición y el úni
 
 Llenar DEPENDENCIAS.md fue lo que más me hizo pensar, porque la columna de ruta de salida obliga a admitir cuánto cuesta cada dependencia. La fila incómoda es la de la API de FarmaUno: es la única de riesgo alto y la única cuya fecha de muerte no decido yo. Lo único que me protege es que la versión está en una variable de entorno y no incrustada en el código, como estaba en legado.py:31.
 
-**Sello:** 0d1b89dea8529e05
+**Sello:** 48e74a7729ac0c26
 
 Salida del marcador al cerrar la etapa:
 
@@ -314,14 +314,43 @@ SELLO: 48e74a7729ac0c26
 
 **Predicción:**
 
+Espero seis verdes y una sola roja, la de mis_pruebas, porque el constructor ya recibe pasarelas, reloj, folios y bitacora, y la vigencia ya sale del reloj inyectado desde la etapa 1.
+
 **Observación:**
 
 ```
+$ pytest -m etapa5
+......F                                                                  [100%]
+=================================== FAILURES ===================================
+__________ test_el_estudiante_escribio_al_menos_tres_pruebas_propias ___________
+pruebas/test_etapa5_testabilidad.py:174: in test_el_estudiante_escribio_al_menos_tres_pruebas_propias
+    pytest.fail(
+E   Failed: Falta la carpeta mis_pruebas/ con sus propias pruebas.
+E      Escriba al menos tres que antes eran imposibles:
+E        1) la vigencia con un reloj fijo,
+E        2) la cadena caída (la pasarela lanza TimeoutError),
+E        3) una receta inválida rechazada en el borde.
+=========================== short test summary info ============================
+FAILED pruebas/test_etapa5_testabilidad.py::test_el_estudiante_escribio_al_menos_tres_pruebas_propias
+1 failed, 6 passed, 77 deselected in 0.02s
 ```
 
 **Explicación:**
 
-**Sello:**
+Correcto. La roja era la única que no se puede aprobar rediseñando: hay que escribir las pruebas.
+
+Escribí ocho en mis_pruebas/test_emision.py. Las tres del enunciado son test_la_vigencia_sale_del_reloj_inyectado_y_no_del_sistema en test_emision.py:78, test_la_cadena_caida_se_propaga_como_error_de_dominio en test_emision.py:90 y test_el_borde_rechaza_una_receta_invalida en test_emision.py:106. Ninguna de las tres era escribible contra el código de partida: la primera habría exigido esperar treinta días, la segunda apagar una farmacia de verdad, y la tercera no habría fallado nunca porque el legado usaba assert.
+
+**Sello:** e09867626938fe5c
+
+Salida del marcador al cerrar la etapa:
+
+```
+Etapa 5  Testabilidad                                verde
+7 pruebas en verde · 0 por resolver
+corrida #8 registrada
+SELLO: e09867626938fe5c
+```
 
 ## Etapa 6 — Diseño defensivo
 
